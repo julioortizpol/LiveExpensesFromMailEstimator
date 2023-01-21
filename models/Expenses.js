@@ -9,7 +9,7 @@ const expensesSchema = new Schema({
   },
   budgetCategory: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users',
+    ref: 'Budget',
     required: true,
   },
   pureFromMail: {
@@ -37,16 +37,3 @@ const expensesSchema = new Schema({
 const Expenses = mongoose.model('Expenses', expensesSchema);
 
 module.exports = Expenses;
-
-/*
-
-Logic to get last consult date, ()
-AutoMatch Logic
-
-budget
-  title,
-  amount,
-  user
-  
-
-*/
