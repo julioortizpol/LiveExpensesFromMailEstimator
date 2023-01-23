@@ -8,7 +8,7 @@ const userSchema = new Schema({
     },
     mail: {
         required: true,
-        type: Number
+        type: String
     },
     lasConsultDate: {
         type: Date
