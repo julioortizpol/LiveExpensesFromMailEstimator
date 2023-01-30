@@ -8,9 +8,9 @@ const userSchema = new Schema({
     },
     mail: {
         required: true,
-        type: Number
+        type: String
     },
-    lasConsultDate: {
+    lastConsultDate: {
         type: Date
     }
 })

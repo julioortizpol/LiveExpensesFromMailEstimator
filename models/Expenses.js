@@ -10,7 +10,6 @@ const expensesSchema = new Schema({
   budgetCategory: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Budget',
-    required: true,
   },
   pureFromMail: {
     default: true,
@@ -24,9 +23,12 @@ const expensesSchema = new Schema({
     type: String,
     required: true,
   },
-  status: {
+  date: {
     type: String,
     required: true,
+  },
+  status: {
+    type: String,
   },
   bank: {
     type: String,

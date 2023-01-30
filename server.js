@@ -3,10 +3,15 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const app = express();
 
-const routes = require('./routes/routes');
+const usersRoutes = require('./routes/Users');
+const expensesRoutes = require('./routes/Expenses');
+const budgetRoutes = require('./routes/Budget');
 
-app.use('/api', routes)
 
+app.use(express.json());
+app.use('/api/users', usersRoutes)
+app.use('/api/expenses', expensesRoutes)
+app.use('/api/budget', budgetRoutes)
 
 const uri = process.env.DATABASE_URL
 mongoose.connect(uri);
