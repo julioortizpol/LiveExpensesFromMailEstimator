@@ -15,7 +15,7 @@ function decodeMailMessage(body) {
         businessTotalCost[element.business] = businessTotalCost[element.business] + cost
       }
     })
-    console.log(businessTotalCost)
+    return businessTotalCost
   }
 
   module.exports = {

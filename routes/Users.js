@@ -14,13 +14,11 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     const {
         name, 
-        mail,
-        lasConsultDate
+        mail
     } = req.body
   const user = new UsersDBObject({
     name, 
     mail,
-    lasConsultDate
   });
   try {
     const savePost = await user.save();

@@ -10,7 +10,7 @@ const userSchema = new Schema({
         required: true,
         type: String
     },
-    lasConsultDate: {
+    lastConsultDate: {
         type: Date
     }
 })

@@ -11,15 +11,15 @@ const googleAuth = require('./googleAuth')
 
 
 
-async function searchMessagesPromerica(auth){
-  const scrappedData = await searchMessages(auth,{from: 'servicio@promerica.com.do', subject: 'Aviso de Transacción'})
-  costAssociation(scrappedData)
+async function searchMessagesPromerica(auth, dates){
+  const scrappedData = await searchMessages(auth,{from: 'servicio@promerica.com.do', subject: 'Aviso de Transacción',  ...dates}, 'promerica')
+  return scrappedData
 }
 
-async function searchMessagesBanreservas(auth){
-  let scrappedData = await searchMessages(auth, {from: 'julio5001@hotmail.com', subject: 'Notificaciones Banreservas'}, 'banreservas')
-  scrappedData = [...scrappedData, ...(await searchMessages(auth, {from: 'julio5001@hotmail.com', subject: 'Recibo de la transacción'}, 'banreservasTransfer'))]
-  costAssociation(scrappedData)
+async function searchMessagesBanreservas(auth,dates){
+  let scrappedData = await searchMessages(auth, {from: 'julio5001@hotmail.com', subject: 'Notificaciones Banreservas', ...dates}, 'banreservas')
+  scrappedData = [...scrappedData, ...(await searchMessages(auth, {from: 'julio5001@hotmail.com', subject: 'Recibo de la transacción',  ...dates}, 'banreservasTransfer'))]
+  return scrappedData
 }
 
 async function searchMessages(auth, query, bank) {
@@ -27,7 +27,7 @@ async function searchMessages(auth, query, bank) {
   const scrappedData = []
   const res = await gmail.users.messages.list({
     userId: 'me',
-    q: `from:(${query.from}) after:2023/01/01 subject:(${query.subject})`,
+    q: `from:(${query.from}) after:${query.after} before:${query.before}  after:2023/01/01 subject:(${query.subject})`,
   });
   const messages = res.data.messages;
   console.log(`Number of messages: ${messages.length}`);
@@ -43,21 +43,38 @@ async function searchMessages(auth, query, bank) {
           scrappedData.push(scrapAlgorithm[bank](htmlBody))
         }
       })
-    }else {
-      const htmlBody = decodeMailMessage(msg.data.payload.body.data);
-      scrappedData.push(scrapAlgorithm[bank](htmlBody))
+    }else if(bank == 'promerica'){      
+      const promericaValidTransfer = msg.data.payload.headers.find(header => {
+        if(header.name == 'Subject'){
+          return header.value == 'Aviso de Transacción'
+        }
+        return false
+      })
+      if(promericaValidTransfer){
+        const htmlBody = decodeMailMessage(msg.data.payload.body.data);
+        scrappedData.push(scrapAlgorithm[bank](htmlBody))
+      }
     }
   }
   return scrappedData
 }
 
 
-async function getExpensesFromGmail(){
+async function getExpensesFromGmail(dates){
   const auth = await googleAuth()
-  searchMessagesBanreservas(auth)
+  const dataPromerica = await searchMessagesPromerica(auth, dates)
+  const dataBanreservas = await searchMessagesBanreservas(auth, dates)
+  return [...dataPromerica, ...dataBanreservas]
 }
 
-getExpensesFromGmail()
+
+module.exports = {
+  getExpensesFromGmail
+}
 
 // route expenses resume
-// 
+// logic to only query from actual month (day o) when not data exits and from last consult date when data exits (user field)
+// Logic to save the data of expenses from query (data mapping)
+// FRONT END - Init project create repo (tailwind, react)
+// FRONT END - budget table
+// FRONT END - expenses table / resume (tabs)

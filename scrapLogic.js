@@ -13,7 +13,6 @@ function scrapMessageDataPromerica(html) {
       8: 'country',
     };
     $('table > tbody > tr').each((index, element) => {
-     
       if (tableInfoIndex[index]) {
         const tds = $(element).find('td');
         const [head, content] = tds;
@@ -21,6 +20,7 @@ function scrapMessageDataPromerica(html) {
           index == 3 ? $(head).text() : $(content).text();
       }
     });
+    tableRow['bank'] = 'promerica'
     return tableRow
   }
 
@@ -44,6 +44,7 @@ function scrapMessageDataPromerica(html) {
           tableRow[tableInfoIndex[i]] = $(element).text().replace("\n","");
         } 
       });
+      tableRow['bank'] = 'Banreservas'
     });
     return tableRow
   }
@@ -68,6 +69,7 @@ function scrapMessageDataPromerica(html) {
           tableRow[tableInfoIndex[i]] = $(element).text().replace("\n","");
         } 
       });
+      tableRow['bank'] = 'Banreservas'
     });
     return tableRow
   }
