@@ -6,16 +6,20 @@ function decodeMailMessage(body) {
   }
   
   function costAssociation(data){
-    const businessTotalCost = {}
-    data.forEach(element => {
-      const cost  = element?.amount?.replace("DOP","").replace("RD$","").replaceAll(",","")*1
-      if(isNaN(businessTotalCost[element.business])){
-        businessTotalCost[element.business] = cost
-      }else {
-        businessTotalCost[element.business] = businessTotalCost[element.business] + cost
-      }
-    })
-    return businessTotalCost
+    try{
+      const businessTotalCost = {}
+      data?.forEach(element => {
+        const cost  = element?.amount?.replace("DOP","").replace("RD$","").replaceAll(",","")*1
+        if(businessTotalCost[element.business] && !(isNaN(businessTotalCost[element.business]?.amount))){
+          businessTotalCost[element.business].amount = businessTotalCost[element.business].amount + cost
+        }else {
+          businessTotalCost[element.business] = {amount: cost, currency: element?.currency}
+        }
+      })
+      return businessTotalCost
+    } catch(err){
+      console.log(err)
+    }
   }
 
   module.exports = {

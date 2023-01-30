@@ -70,6 +70,7 @@ async function getExpensesFromGmail(dates){
   return [...dataPromerica, ...dataBanreservas]
 }
 
+//getExpensesFromGmail({after:'2023/01/01', before:'2023/01/10'})
 
 module.exports = {
   getExpensesFromGmail

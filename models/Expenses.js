@@ -27,6 +27,9 @@ const expensesSchema = new Schema({
     type: String,
     required: true,
   },
+  currency: {
+    type: String,
+  },
   status: {
     type: String,
   },

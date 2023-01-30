@@ -18,6 +18,9 @@ function scrapMessageDataPromerica(html) {
         const [head, content] = tds;
         tableRow[tableInfoIndex[index]] =
           index == 3 ? $(head).text() : $(content).text();
+        if(index == 4){
+            tableRow['currency'] = ($(content).text().includes('RD')) ? 'DOP':'USD'
+        }
       }
     });
     tableRow['bank'] = 'promerica'
@@ -67,6 +70,9 @@ function scrapMessageDataPromerica(html) {
       $(tds).each((i, element) => {
         if(tableInfoIndex[i]){
           tableRow[tableInfoIndex[i]] = $(element).text().replace("\n","");
+          if(i == 8){
+            tableRow['currency'] = ($(element).text().replace("\n","").includes('DOP')) ? 'DOP':'USD'
+          }
         } 
       });
       tableRow['bank'] = 'Banreservas'
