@@ -27,35 +27,38 @@ async function searchMessages(auth, query, bank) {
   const scrappedData = []
   const res = await gmail.users.messages.list({
     userId: 'me',
-    q: `from:(${query.from}) after:${query.after} before:${query.before}  after:2023/01/01 subject:(${query.subject})`,
+    q: `from:(${query.from}) after:${query.after} before:${query.before}  subject:(${query.subject})`,
   });
   const messages = res.data.messages;
-  console.log(`Number of messages: ${messages.length}`);
-  for (const message of messages) {
-    const msg = await gmail.users.messages.get({
-      userId: 'me',
-      id: message.id,
-    });
-    if(bank == 'banreservas' || bank == 'banreservasTransfer'){
-      msg.data.payload.parts.forEach((part, index) =>  {
-        if(index == 1) {
-          const htmlBody = decodeMailMessage(part.body.data);
+  console.log(`Number of messages: ${messages?.length}`);
+  if(messages){
+    for (const message of messages) {
+      const msg = await gmail.users.messages.get({
+        userId: 'me',
+        id: message.id,
+      });
+      if(bank == 'banreservas' || bank == 'banreservasTransfer'){
+        msg.data.payload.parts.forEach((part, index) =>  {
+          if(index == 1) {
+            const htmlBody = decodeMailMessage(part.body.data);
+            scrappedData.push(scrapAlgorithm[bank](htmlBody))
+          }
+        })
+      }else if(bank == 'promerica'){      
+        const promericaValidTransfer = msg.data.payload.headers.find(header => {
+          if(header.name == 'Subject'){
+            return header.value == 'Aviso de Transacción'
+          }
+          return false
+        })
+        if(promericaValidTransfer){
+          const htmlBody = decodeMailMessage(msg.data.payload.body.data);
           scrappedData.push(scrapAlgorithm[bank](htmlBody))
         }
-      })
-    }else if(bank == 'promerica'){      
-      const promericaValidTransfer = msg.data.payload.headers.find(header => {
-        if(header.name == 'Subject'){
-          return header.value == 'Aviso de Transacción'
-        }
-        return false
-      })
-      if(promericaValidTransfer){
-        const htmlBody = decodeMailMessage(msg.data.payload.body.data);
-        scrappedData.push(scrapAlgorithm[bank](htmlBody))
       }
     }
   }
+
   return scrappedData
 }
 

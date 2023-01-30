@@ -39,19 +39,10 @@ async function uploadExpensesFromMail(expenses, userId) {
       ...data
     }
   })
-  const expensesInserted = await ExpensesDBObject.insertMany(expensesMap)
   try {
-    UsersDBObject.updateOne(
-      { _id: userId },
-      {
-        $set: {
-          lastConsultDate: (new Date()),
-        },
-      }
-    );
-    const savePost = await expensesInserted.save();
-    return savePost;
+    await ExpensesDBObject.insertMany(expensesMap)
   } catch (err) {
+    console.log(err)
     return err;
   }
 }
@@ -63,10 +54,13 @@ router.get('/:userId', async (req, res) => {
       const expensesFromGmail = await getExpensesFromGmail(queryDates)
         await uploadExpensesFromMail(expensesFromGmail, user._id)
     }
+    user.lastConsultDate =  (new Date())
+    user.save()
     const expenses = await ExpensesDBObject.find({ user: req.params.userId });
     // update user last request if success
     res.json(expenses);
   } catch (err) {
+    console.log(err)
     res.json({ message: err });
   }
 });
@@ -75,7 +69,6 @@ router.get('/resume/:userId', async (req, res) => {
   try {
     const expenses = await ExpensesDBObject.find({ user: req.params.userId });
     const expensesResume = costAssociation(expenses)
-    // update user last request if success
     res.json(expensesResume);
   } catch (err) {
     res.json({ message: err });
